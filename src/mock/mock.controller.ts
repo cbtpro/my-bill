@@ -1,10 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { tableList } from './mock-list';
 
 @Controller('/mock')
 export class MockController {
   @Get('/list')
-  getList(@Query() params: PagingParams): IResponseBodyByPaging<IMockUser> {
+  getList(
+    @Req() request: Request,
+    @Query() params: PagingParams,
+  ): IResponseBodyByPaging<IMockUser> {
     const len = tableList.length;
     const [pageSize, page] = [
       Number.parseInt(params.pageSize),
