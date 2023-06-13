@@ -16,36 +16,42 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { crypt } from '../utils/bcrypt';
 import { UserService } from './user.service';
 import { User } from './user.entity';
+import { ForbiddenException } from '../exception/forbidden.exception';
+import { SkipAuth } from '../auth/auth.decorator';
 
 @Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @SkipAuth()
   @Get('/test')
   getHello(): string {
     return this.userService.getHello();
   }
 
+  @SkipAuth()
   @Post('/register')
   async register(@Body() user: IUser): Promise<IResponseBody<User>> {
     try {
       const password = await crypt(user.password);
       const cryptUser = Object.assign(user, { password });
-      const newUser = await this.userService.registerNewUser(cryptUser);
-      const responseBody: IResponseBody<User> = {
-        success: true,
-        message: '注册成功！',
-        data: newUser,
-      };
-      return responseBody;
+      const isExist = await this.userService.findUserCountByUsername(
+        user.username,
+      );
+      if (!isExist) {
+        const newUser = await this.userService.registerNewUser(cryptUser);
+        const responseBody: IResponseBody<User> = {
+          success: true,
+          message: '注册成功！',
+          data: newUser,
+        };
+        return responseBody;
+      } else {
+        throw new Error('用户名已存在');
+      }
     } catch (error) {
       console.error(error);
-      const responseBody: IResponseBody<User> = {
-        success: false,
-        message: error.message,
-        data: null,
-      };
-      return responseBody;
+      throw new ForbiddenException(error.message);
     }
   }
 

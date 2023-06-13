@@ -19,7 +19,7 @@ export class AuthService {
     try {
       const user = await queryRunner.manager
         .createQueryBuilder(User, 'user')
-        .where('user.username= :username', { username: username })
+        .where('user.username = :username', { username: username })
         .getOne();
       // await queryRunner.commitTransaction();
       if (!user) {

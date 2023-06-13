@@ -28,6 +28,28 @@ export class UserService {
     return 'Hello World!';
   }
 
+  /**
+   * 判断用户名是否存在
+   * @param username 用户名
+   * @returns 是否存在用户
+   */
+  async findUserCountByUsername(username: string): Promise<boolean> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      const count = await queryRunner.manager
+        .createQueryBuilder(User, 'user')
+        .where('user.username = :username', { username: username })
+        .getCount();
+      return count > 0;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+    return false;
+  }
   async registerNewUser(user: IUser): Promise<User> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
