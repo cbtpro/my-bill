@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+interface IAuthInfo {
+  access_token: string;
+}
 interface IResponseBody<T> {
   success: boolean;
   message: string;

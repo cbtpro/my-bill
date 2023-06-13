@@ -37,11 +37,11 @@ export class UserService {
       await queryRunner.commitTransaction();
       // 返回前转换下，去除密码
       return plainToClass(User, newUser);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       // 如果遇到错误，可以回滚事务
       await queryRunner.rollbackTransaction();
-      throw new ForbiddenException('用户名已存在');
+      throw new ForbiddenException(error.message);
     } finally {
       // 你需要手动实例化并部署一个queryRunner
       await queryRunner.release();

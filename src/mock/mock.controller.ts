@@ -1,9 +1,11 @@
 import { Controller, Get, Query, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { tableList } from './mock-list';
+import { SkipAuth } from '../auth/auth.decorator';
 
 @Controller('/mock')
 export class MockController {
+  // @SkipAuth()
   @Get('/list')
   getList(
     @Req() request: Request,
